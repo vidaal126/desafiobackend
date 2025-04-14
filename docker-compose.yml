@@ -1,0 +1,16 @@
+version: '3.9'
+services:
+  postgres-desafio-backend:
+    image: postgres:16
+    container_name: desafiobackend
+    ports:
+      - '5432:5432'
+    environment:
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: 123mudar
+      POSTGRES_DB: postgres-desafiobackend
+    volumes:
+      - postgres-desafiobackend:/var/lib/postgresql/data
+
+volumes:
+  postgres-desafiobackend:
