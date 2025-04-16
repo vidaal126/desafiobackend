@@ -1,8 +1,10 @@
 import { HttpStatus, Injectable } from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
-import { hashPassword } from 'utils/bcrypt';
+import { comparePassword, hashPassword } from 'utils/bcrypt';
 import { FindUserDto } from './dto/find-user.dto';
 import { PrismaService } from 'src/prisma/prisma.service';
+import { LoginUserDto } from './dto/login-user.dto';
+import { isEmail } from 'class-validator';
 
 @Injectable()
 export class UsersService {
@@ -50,6 +52,7 @@ export class UsersService {
       };
     }
   }
+
   async findUser(findUserDto: FindUserDto) {
     try {
       const foundUser = await this.prisma.user.findFirst({
@@ -75,6 +78,62 @@ export class UsersService {
         success: false,
         statusCode: HttpStatus.INTERNAL_SERVER_ERROR,
         error: error instanceof Error ? error.message : 'Erro desconhecido',
+      };
+    }
+  }
+
+  async validateUser(loginUserDto: LoginUserDto) {
+    try {
+      const { identifier, password } = loginUserDto;
+
+      const isEmail = identifier.includes('@');
+
+      if (!isEmail) {
+        const validatorCpf = identifier.replace(/\D/g, '');
+
+        if (validatorCpf.length !== 11) {
+          return {
+            message: 'CPF inválido. Deve conter 11 numéros',
+          };
+        }
+      }
+
+      const user = await this.prisma.user.findUnique({
+        where: isEmail ? { email: identifier } : { cpf: identifier },
+      });
+
+      if (!user) {
+        return {
+          message: 'Usuário não encontrado',
+          success: false,
+          statusCode: HttpStatus.NOT_FOUND,
+        };
+      }
+
+      const passwordValid = await comparePassword(password, user.password);
+
+      if (!passwordValid) {
+        return {
+          message: 'Credenciais incorretas',
+          success: false,
+          statusCode: HttpStatus.UNAUTHORIZED,
+        };
+      }
+
+      return {
+        message: 'Login realizado com sucesso',
+        succes: true,
+        statusCode: HttpStatus.OK,
+      };
+    } catch (error) {
+      return {
+        message: 'Erro interno do servidor',
+        success: false,
+        statusCode: HttpStatus.INTERNAL_SERVER_ERROR,
+        error:
+          error instanceof Error
+            ? error.message
+            : 'Ocorreu um erro ao salvar no banco',
       };
     }
   }
