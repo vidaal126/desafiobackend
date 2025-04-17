@@ -4,7 +4,6 @@ import { comparePassword, hashPassword } from 'utils/bcrypt';
 import { FindUserDto } from './dto/find-user.dto';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { LoginUserDto } from './dto/login-user.dto';
-import { isEmail } from 'class-validator';
 
 @Injectable()
 export class UsersService {
