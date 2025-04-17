@@ -11,20 +11,6 @@ export class UsersService {
 
   async createUser(createUserDto: CreateUserDto) {
     try {
-      const existsUser = await this.prisma.user.findUnique({
-        where: {
-          email: createUserDto.email,
-        },
-      });
-
-      if (existsUser) {
-        return {
-          message: 'Usuário ja existe',
-          succes: false,
-          status: HttpStatus.CONFLICT,
-        };
-      }
-
       const hashedPassword = await hashPassword(createUserDto.password);
 
       const create = await this.prisma.user.create({
@@ -54,6 +40,20 @@ export class UsersService {
 
   async findUser(findUserDto: FindUserDto) {
     try {
+      const existsUser = await this.prisma.user.findUnique({
+        where: {
+          email: findUserDto.email,
+        },
+      });
+
+      if (existsUser) {
+        return {
+          message: 'Usuário ja existe',
+          succes: false,
+          status: HttpStatus.CONFLICT,
+        };
+      }
+
       const foundUser = await this.prisma.user.findFirst({
         where: {
           OR: [{ email: findUserDto.email }, { id: findUserDto.user_id }],
