@@ -3,7 +3,7 @@ import { CreateUserDto } from './dto/create-user.dto';
 import { comparePassword, hashPassword } from 'utils/bcrypt';
 import { FindUserDto } from './dto/find-user.dto';
 import { PrismaService } from 'src/prisma/prisma.service';
-import { LoginUserDto } from './dto/login-user.dto';
+import { LoginDto } from './dto/login-user.dto';
 
 @Injectable()
 export class UsersService {
@@ -42,7 +42,7 @@ export class UsersService {
     try {
       const existsUser = await this.prisma.user.findUnique({
         where: {
-          email: findUserDto.email,
+          cpf: findUserDto.identifier,
         },
       });
 
@@ -56,7 +56,7 @@ export class UsersService {
 
       const foundUser = await this.prisma.user.findFirst({
         where: {
-          OR: [{ email: findUserDto.email }, { id: findUserDto.user_id }],
+          OR: [{ email: findUserDto.identifier }, { id: findUserDto.user_id }],
         },
       });
       if (!foundUser) {
@@ -80,59 +80,51 @@ export class UsersService {
       };
     }
   }
-
-  async validateUser(loginUserDto: LoginUserDto) {
+  async login(loginDto: LoginDto) {
     try {
-      const { identifier, password } = loginUserDto;
-
-      const isEmail = identifier.includes('@');
-
-      if (!isEmail) {
-        const validatorCpf = identifier.replace(/\D/g, '');
-
-        if (validatorCpf.length !== 11) {
-          return {
-            message: 'CPF inválido. Deve conter 11 numéros',
-          };
-        }
-      }
-
-      const user = await this.prisma.user.findUnique({
-        where: isEmail ? { email: identifier } : { cpf: identifier },
+      const user = await this.prisma.user.findFirst({
+        where: {
+          OR: [{ email: loginDto.identifier }, { cpf: loginDto.identifier }],
+        },
       });
 
       if (!user) {
         return {
           message: 'Usuário não encontrado',
           success: false,
-          statusCode: HttpStatus.NOT_FOUND,
+          status: HttpStatus.NOT_FOUND,
         };
       }
 
-      const passwordValid = await comparePassword(password, user.password);
-
-      if (!passwordValid) {
+      const isPasswordValid = await comparePassword(
+        loginDto.password,
+        user.password,
+      );
+      if (!isPasswordValid) {
         return {
-          message: 'Credenciais incorretas',
+          message: 'Senha incorreta',
           success: false,
-          statusCode: HttpStatus.UNAUTHORIZED,
+          status: HttpStatus.UNAUTHORIZED,
         };
       }
 
       return {
-        message: 'Login realizado com sucesso',
-        succes: true,
-        statusCode: HttpStatus.OK,
+        message: 'Login realizado com sucesso!',
+        success: true,
+        status: HttpStatus.OK,
+        data: {
+          id: user.id,
+          name: user.name,
+          email: user.email,
+          cpf: user.cpf,
+        },
       };
     } catch (error) {
       return {
-        message: 'Erro interno do servidor',
+        message: 'Erro interno no servidor',
         success: false,
-        statusCode: HttpStatus.INTERNAL_SERVER_ERROR,
-        error:
-          error instanceof Error
-            ? error.message
-            : 'Ocorreu um erro ao salvar no banco',
+        status: HttpStatus.INTERNAL_SERVER_ERROR,
+        error: error instanceof Error ? error.message : 'Erro desconhecido',
       };
     }
   }
