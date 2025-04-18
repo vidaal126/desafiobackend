@@ -4,13 +4,32 @@ import { comparePassword, hashPassword } from 'utils/bcrypt';
 import { FindUserDto } from './dto/find-user.dto';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { LoginDto } from './dto/login-user.dto';
+import { AccountService } from 'src/account/account.service';
+import { create } from 'domain';
 
 @Injectable()
 export class UsersService {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly accountService: AccountService,
+  ) {}
 
   async createUser(createUserDto: CreateUserDto) {
     try {
+      const existingUser = await this.prisma.user.findFirst({
+        where: {
+          OR: [{ cpf: createUserDto.cpf }, { email: createUserDto.email }],
+        },
+      });
+
+      if (existingUser) {
+        return {
+          message: 'CPF ou e-mail já estão cadastrados.',
+          success: false,
+          status: HttpStatus.BAD_REQUEST,
+        };
+      }
+
       const hashedPassword = await hashPassword(createUserDto.password);
 
       const create = await this.prisma.user.create({
@@ -22,16 +41,21 @@ export class UsersService {
         },
       });
 
+      const account = await this.accountService.createAccount(create.id);
+
       return {
         message: 'Usuário criado com sucesso!',
         success: true,
         status: HttpStatus.CREATED,
-        data: create,
+        data: {
+          ...create,
+          account,
+        },
       };
     } catch (error) {
       return {
         message:
-          error instanceof Error ? error.message : 'Error ao criar usuário.',
+          error instanceof Error ? error.message : 'Erro ao criar usuário.',
         success: false,
         status: HttpStatus.INTERNAL_SERVER_ERROR,
       };
@@ -51,6 +75,7 @@ export class UsersService {
           message: 'Usuário ja existe',
           succes: false,
           status: HttpStatus.CONFLICT,
+          existsUser,
         };
       }
 
@@ -59,6 +84,7 @@ export class UsersService {
           OR: [{ email: findUserDto.identifier }, { id: findUserDto.user_id }],
         },
       });
+
       if (!foundUser) {
         return {
           message: 'Usuário não encontrado',
@@ -66,11 +92,6 @@ export class UsersService {
           statusCode: HttpStatus.NOT_FOUND,
         };
       }
-      return {
-        message: 'Usuário não encontrado',
-        success: false,
-        stattusCode: HttpStatus.NOT_FOUND,
-      };
     } catch (error) {
       return {
         message: 'Erro interno no servidor',
@@ -80,6 +101,7 @@ export class UsersService {
       };
     }
   }
+
   async login(loginDto: LoginDto) {
     try {
       const user = await this.prisma.user.findFirst({

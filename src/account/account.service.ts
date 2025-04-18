@@ -1,26 +1,35 @@
 import { Injectable } from '@nestjs/common';
-import { CreateAccountDto } from './dto/create-account.dto';
-import { UpdateAccountDto } from './dto/update-account.dto';
+import { PrismaService } from 'src/prisma/prisma.service'; // ajusta esse import se necessário
+import { Prisma } from '@prisma/client';
 
 @Injectable()
 export class AccountService {
-  create(createAccountDto: CreateAccountDto) {
-    return 'This action adds a new account';
-  }
+  constructor(private readonly prisma: PrismaService) {}
 
-  findAll() {
-    return `This action returns all account`;
-  }
+  async createAccount(userId: number) {
+    // Busca a conta com maior numberAccount
+    const lastAccount = await this.prisma.internalAccount.findFirst({
+      orderBy: {
+        numberAccount: 'desc',
+      },
+    });
 
-  findOne(id: number) {
-    return `This action returns a #${id} account`;
-  }
+    // Define o próximo numberAccount
+    const nextNumberAccount = lastAccount
+      ? lastAccount.numberAccount + 1
+      : 1050;
 
-  update(id: number, updateAccountDto: UpdateAccountDto) {
-    return `This action updates a #${id} account`;
-  }
+    // Cria a nova conta
+    const newAccount = await this.prisma.internalAccount.create({
+      data: {
+        numberAccount: nextNumberAccount,
+        user: {
+          connect: { id: userId },
+        },
+        // agency já tem default("10") no Prisma
+      },
+    });
 
-  remove(id: number) {
-    return `This action removes a #${id} account`;
+    return newAccount;
   }
 }
