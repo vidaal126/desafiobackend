@@ -2,18 +2,12 @@ import { IsNotEmpty, IsNumber, IsString } from 'class-validator';
 
 export class CreateAccountDto {
   @IsNumber()
-  @IsNotEmpty()
-  id: number;
+  numberAccount: number;
 
-  @IsNotEmpty()
   @IsString()
-  accountNumber: string;
-
   @IsNotEmpty()
-  @IsString()
   agency: string;
 
-  @IsNotEmpty()
-  @IsString()
-  balance: string;
+  @IsNumber()
+  userId: number;
 }
