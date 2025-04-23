@@ -2811,26 +2811,24 @@ export namespace Prisma {
 
   export type InternalAccountAvgAggregateOutputType = {
     id: number | null
-    numberAccount: number | null
     balance: Decimal | null
   }
 
   export type InternalAccountSumAggregateOutputType = {
     id: number | null
-    numberAccount: number | null
     balance: Decimal | null
   }
 
   export type InternalAccountMinAggregateOutputType = {
     id: number | null
-    numberAccount: number | null
+    numberAccount: string | null
     agency: string | null
     balance: Decimal | null
   }
 
   export type InternalAccountMaxAggregateOutputType = {
     id: number | null
-    numberAccount: number | null
+    numberAccount: string | null
     agency: string | null
     balance: Decimal | null
   }
@@ -2846,13 +2844,11 @@ export namespace Prisma {
 
   export type InternalAccountAvgAggregateInputType = {
     id?: true
-    numberAccount?: true
     balance?: true
   }
 
   export type InternalAccountSumAggregateInputType = {
     id?: true
-    numberAccount?: true
     balance?: true
   }
 
@@ -2966,7 +2962,7 @@ export namespace Prisma {
 
   export type InternalAccountGroupByOutputType = {
     id: number
-    numberAccount: number
+    numberAccount: string
     agency: string
     balance: Decimal
     _count: InternalAccountCountAggregateOutputType | null
@@ -3038,7 +3034,7 @@ export namespace Prisma {
     }
     scalars: $Extensions.GetPayloadResult<{
       id: number
-      numberAccount: number
+      numberAccount: string
       agency: string
       balance: Prisma.Decimal
     }, ExtArgs["result"]["internalAccount"]>
@@ -3467,7 +3463,7 @@ export namespace Prisma {
    */
   interface InternalAccountFieldRefs {
     readonly id: FieldRef<"InternalAccount", 'Int'>
-    readonly numberAccount: FieldRef<"InternalAccount", 'Int'>
+    readonly numberAccount: FieldRef<"InternalAccount", 'String'>
     readonly agency: FieldRef<"InternalAccount", 'String'>
     readonly balance: FieldRef<"InternalAccount", 'Decimal'>
   }
@@ -9838,7 +9834,7 @@ export namespace Prisma {
     OR?: InternalAccountWhereInput[]
     NOT?: InternalAccountWhereInput | InternalAccountWhereInput[]
     id?: IntFilter<"InternalAccount"> | number
-    numberAccount?: IntFilter<"InternalAccount"> | number
+    numberAccount?: StringFilter<"InternalAccount"> | string
     agency?: StringFilter<"InternalAccount"> | string
     balance?: DecimalFilter<"InternalAccount"> | Decimal | DecimalJsLike | number | string
     user?: UserListRelationFilter
@@ -9856,7 +9852,7 @@ export namespace Prisma {
 
   export type InternalAccountWhereUniqueInput = Prisma.AtLeast<{
     id?: number
-    numberAccount?: number
+    numberAccount?: string
     AND?: InternalAccountWhereInput | InternalAccountWhereInput[]
     OR?: InternalAccountWhereInput[]
     NOT?: InternalAccountWhereInput | InternalAccountWhereInput[]
@@ -9883,7 +9879,7 @@ export namespace Prisma {
     OR?: InternalAccountScalarWhereWithAggregatesInput[]
     NOT?: InternalAccountScalarWhereWithAggregatesInput | InternalAccountScalarWhereWithAggregatesInput[]
     id?: IntWithAggregatesFilter<"InternalAccount"> | number
-    numberAccount?: IntWithAggregatesFilter<"InternalAccount"> | number
+    numberAccount?: StringWithAggregatesFilter<"InternalAccount"> | string
     agency?: StringWithAggregatesFilter<"InternalAccount"> | string
     balance?: DecimalWithAggregatesFilter<"InternalAccount"> | Decimal | DecimalJsLike | number | string
   }
@@ -10266,7 +10262,7 @@ export namespace Prisma {
   }
 
   export type InternalAccountCreateInput = {
-    numberAccount: number
+    numberAccount: string
     agency?: string
     balance?: Decimal | DecimalJsLike | number | string
     user?: UserCreateNestedManyWithoutInternalAccountInput
@@ -10275,7 +10271,7 @@ export namespace Prisma {
 
   export type InternalAccountUncheckedCreateInput = {
     id?: number
-    numberAccount: number
+    numberAccount: string
     agency?: string
     balance?: Decimal | DecimalJsLike | number | string
     user?: UserUncheckedCreateNestedManyWithoutInternalAccountInput
@@ -10283,7 +10279,7 @@ export namespace Prisma {
   }
 
   export type InternalAccountUpdateInput = {
-    numberAccount?: IntFieldUpdateOperationsInput | number
+    numberAccount?: StringFieldUpdateOperationsInput | string
     agency?: StringFieldUpdateOperationsInput | string
     balance?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     user?: UserUpdateManyWithoutInternalAccountNestedInput
@@ -10292,7 +10288,7 @@ export namespace Prisma {
 
   export type InternalAccountUncheckedUpdateInput = {
     id?: IntFieldUpdateOperationsInput | number
-    numberAccount?: IntFieldUpdateOperationsInput | number
+    numberAccount?: StringFieldUpdateOperationsInput | string
     agency?: StringFieldUpdateOperationsInput | string
     balance?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     user?: UserUncheckedUpdateManyWithoutInternalAccountNestedInput
@@ -10301,20 +10297,20 @@ export namespace Prisma {
 
   export type InternalAccountCreateManyInput = {
     id?: number
-    numberAccount: number
+    numberAccount: string
     agency?: string
     balance?: Decimal | DecimalJsLike | number | string
   }
 
   export type InternalAccountUpdateManyMutationInput = {
-    numberAccount?: IntFieldUpdateOperationsInput | number
+    numberAccount?: StringFieldUpdateOperationsInput | string
     agency?: StringFieldUpdateOperationsInput | string
     balance?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
   }
 
   export type InternalAccountUncheckedUpdateManyInput = {
     id?: IntFieldUpdateOperationsInput | number
-    numberAccount?: IntFieldUpdateOperationsInput | number
+    numberAccount?: StringFieldUpdateOperationsInput | string
     agency?: StringFieldUpdateOperationsInput | string
     balance?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
   }
@@ -10816,7 +10812,6 @@ export namespace Prisma {
 
   export type InternalAccountAvgOrderByAggregateInput = {
     id?: SortOrder
-    numberAccount?: SortOrder
     balance?: SortOrder
   }
 
@@ -10836,7 +10831,6 @@ export namespace Prisma {
 
   export type InternalAccountSumOrderByAggregateInput = {
     id?: SortOrder
-    numberAccount?: SortOrder
     balance?: SortOrder
   }
 
@@ -11759,7 +11753,7 @@ export namespace Prisma {
   }
 
   export type InternalAccountCreateWithoutUserInput = {
-    numberAccount: number
+    numberAccount: string
     agency?: string
     balance?: Decimal | DecimalJsLike | number | string
     rechargeHistory?: RechargeHistoryCreateNestedManyWithoutInternalAccountInput
@@ -11767,7 +11761,7 @@ export namespace Prisma {
 
   export type InternalAccountUncheckedCreateWithoutUserInput = {
     id?: number
-    numberAccount: number
+    numberAccount: string
     agency?: string
     balance?: Decimal | DecimalJsLike | number | string
     rechargeHistory?: RechargeHistoryUncheckedCreateNestedManyWithoutInternalAccountInput
@@ -11821,7 +11815,7 @@ export namespace Prisma {
   }
 
   export type InternalAccountUpdateWithoutUserInput = {
-    numberAccount?: IntFieldUpdateOperationsInput | number
+    numberAccount?: StringFieldUpdateOperationsInput | string
     agency?: StringFieldUpdateOperationsInput | string
     balance?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     rechargeHistory?: RechargeHistoryUpdateManyWithoutInternalAccountNestedInput
@@ -11829,7 +11823,7 @@ export namespace Prisma {
 
   export type InternalAccountUncheckedUpdateWithoutUserInput = {
     id?: IntFieldUpdateOperationsInput | number
-    numberAccount?: IntFieldUpdateOperationsInput | number
+    numberAccount?: StringFieldUpdateOperationsInput | string
     agency?: StringFieldUpdateOperationsInput | string
     balance?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     rechargeHistory?: RechargeHistoryUncheckedUpdateManyWithoutInternalAccountNestedInput
@@ -11974,7 +11968,7 @@ export namespace Prisma {
   }
 
   export type InternalAccountCreateWithoutRechargeHistoryInput = {
-    numberAccount: number
+    numberAccount: string
     agency?: string
     balance?: Decimal | DecimalJsLike | number | string
     user?: UserCreateNestedManyWithoutInternalAccountInput
@@ -11982,7 +11976,7 @@ export namespace Prisma {
 
   export type InternalAccountUncheckedCreateWithoutRechargeHistoryInput = {
     id?: number
-    numberAccount: number
+    numberAccount: string
     agency?: string
     balance?: Decimal | DecimalJsLike | number | string
     user?: UserUncheckedCreateNestedManyWithoutInternalAccountInput
@@ -12005,7 +11999,7 @@ export namespace Prisma {
   }
 
   export type InternalAccountUpdateWithoutRechargeHistoryInput = {
-    numberAccount?: IntFieldUpdateOperationsInput | number
+    numberAccount?: StringFieldUpdateOperationsInput | string
     agency?: StringFieldUpdateOperationsInput | string
     balance?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     user?: UserUpdateManyWithoutInternalAccountNestedInput
@@ -12013,7 +12007,7 @@ export namespace Prisma {
 
   export type InternalAccountUncheckedUpdateWithoutRechargeHistoryInput = {
     id?: IntFieldUpdateOperationsInput | number
-    numberAccount?: IntFieldUpdateOperationsInput | number
+    numberAccount?: StringFieldUpdateOperationsInput | string
     agency?: StringFieldUpdateOperationsInput | string
     balance?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     user?: UserUncheckedUpdateManyWithoutInternalAccountNestedInput

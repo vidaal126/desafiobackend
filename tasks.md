@@ -16,7 +16,7 @@
     • Modúlo conta interna{
         Atributos: id, numero_conta, agencia, saldo.
         Regras:{
-
+            • Usuários podem fazer login com email e CPF. Por enquanto ta sendo feito o login só com CPF
             • Recargas de saldo só podem ser realizadas pelo titular da conta, fornecendo o cpf para validação.
             • Não é permitido recarregar valores negativos ou zero.
         }
