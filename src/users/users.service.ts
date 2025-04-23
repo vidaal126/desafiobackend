@@ -1,140 +1,89 @@
-import { HttpStatus, Injectable } from '@nestjs/common';
-import { CreateUserDto } from './dto/create-user.dto';
-import { comparePassword, hashPassword } from 'utils/bcrypt';
-import { FindUserDto } from './dto/find-user.dto';
+import { Injectable, HttpStatus } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
-import { LoginUserDto } from './dto/login-user.dto';
-import { isEmail } from 'class-validator';
+import { CreateUserDto } from './dto/create-user.dto';
+import { hashPassword } from 'utils/bcrypt';
+import { AccountsService } from 'src/accounts/accounts.service';
+import { User, InternalAccount } from '@prisma/client';
 
 @Injectable()
 export class UsersService {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly accountsService: AccountsService,
+  ) {}
+
+  async findOneByEmailOrCPF(identifier: string) {
+    try {
+      return await this.prisma.user.findFirst({
+        where: {
+          OR: [{ email: identifier }, { cpf: identifier }],
+        },
+      });
+    } catch (error) {
+      console.error('Erro ao buscar usuário:', error.message);
+      throw new Error('Erro interno ao buscar usuário.');
+    }
+  }
 
   async createUser(createUserDto: CreateUserDto) {
     try {
-      const existsUser = await this.prisma.user.findUnique({
-        where: {
-          email: createUserDto.email,
-        },
-      });
-
-      if (existsUser) {
-        return {
-          message: 'Usuário ja existe',
-          succes: false,
-          status: HttpStatus.CONFLICT,
-        };
-      }
+      const userExists = await this.findOneByEmailOrCPF(createUserDto.cpf);
+      if (userExists) return this.errorUserAlreadyExists();
 
       const hashedPassword = await hashPassword(createUserDto.password);
 
-      const create = await this.prisma.user.create({
+      const user = await this.prisma.user.create({
         data: {
           name: createUserDto.name,
           cpf: createUserDto.cpf,
-          password: hashedPassword,
           email: createUserDto.email,
+          password: hashedPassword,
         },
       });
 
-      return {
-        message: 'Usuário criado com sucesso!',
-        success: true,
-        status: HttpStatus.CREATED,
-        data: create,
-      };
+      const account = await this.accountsService.createAccount(user.id);
+
+      await this.prisma.user.update({
+        where: { id: user.id },
+        data: { internalAccountId: account.id },
+      });
+
+      return this.buildSuccessResponse(user, account);
     } catch (error) {
+      console.error('Erro ao criar usuário:', error.message);
       return {
-        message:
-          error instanceof Error ? error.message : 'Error ao criar usuário.',
+        message: 'Erro ao criar o usuário. Tente novamente.',
         success: false,
-        status: HttpStatus.INTERNAL_SERVER_ERROR,
+        statusCode: HttpStatus.INTERNAL_SERVER_ERROR,
       };
     }
   }
 
-  async findUser(findUserDto: FindUserDto) {
-    try {
-      const foundUser = await this.prisma.user.findFirst({
-        where: {
-          OR: [{ email: findUserDto.email }, { id: findUserDto.user_id }],
-        },
-      });
-      if (!foundUser) {
-        return {
-          message: 'Usuário não encontrado',
-          success: false,
-          statusCode: HttpStatus.NOT_FOUND,
-        };
-      }
-      return {
-        message: 'Usuário não encontrado',
-        success: false,
-        stattusCode: HttpStatus.NOT_FOUND,
-      };
-    } catch (error) {
-      return {
-        message: 'Erro interno no servidor',
-        success: false,
-        statusCode: HttpStatus.INTERNAL_SERVER_ERROR,
-        error: error instanceof Error ? error.message : 'Erro desconhecido',
-      };
-    }
+  errorUserAlreadyExists() {
+    return {
+      message: 'CPF ou e-mail já estão cadastrados.',
+      success: false,
+      statusCode: HttpStatus.BAD_REQUEST,
+    };
   }
 
-  async validateUser(loginUserDto: LoginUserDto) {
-    try {
-      const { identifier, password } = loginUserDto;
-
-      const isEmail = identifier.includes('@');
-
-      if (!isEmail) {
-        const validatorCpf = identifier.replace(/\D/g, '');
-
-        if (validatorCpf.length !== 11) {
-          return {
-            message: 'CPF inválido. Deve conter 11 numéros',
-          };
-        }
-      }
-
-      const user = await this.prisma.user.findUnique({
-        where: isEmail ? { email: identifier } : { cpf: identifier },
-      });
-
-      if (!user) {
-        return {
-          message: 'Usuário não encontrado',
-          success: false,
-          statusCode: HttpStatus.NOT_FOUND,
-        };
-      }
-
-      const passwordValid = await comparePassword(password, user.password);
-
-      if (!passwordValid) {
-        return {
-          message: 'Credenciais incorretas',
-          success: false,
-          statusCode: HttpStatus.UNAUTHORIZED,
-        };
-      }
-
-      return {
-        message: 'Login realizado com sucesso',
-        succes: true,
-        statusCode: HttpStatus.OK,
-      };
-    } catch (error) {
-      return {
-        message: 'Erro interno do servidor',
-        success: false,
-        statusCode: HttpStatus.INTERNAL_SERVER_ERROR,
-        error:
-          error instanceof Error
-            ? error.message
-            : 'Ocorreu um erro ao salvar no banco',
-      };
-    }
+  buildSuccessResponse(user: User, account: InternalAccount) {
+    return {
+      message: 'Usuário criado com sucesso!',
+      success: true,
+      statusCode: HttpStatus.CREATED,
+      data: {
+        id: user.id,
+        name: user.name,
+        cpf: user.cpf,
+        email: user.email,
+        account: {
+          id: account.id,
+          numberAccount: account.numberAccount,
+          agency: account.agency,
+          balance: account.balance,
+        },
+      },
+    };
   }
 }

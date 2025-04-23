@@ -10263,7 +10263,7 @@ export namespace Prisma {
 
   export type InternalAccountCreateInput = {
     numberAccount: string
-    agency: string
+    agency?: string
     balance?: Decimal | DecimalJsLike | number | string
     user?: UserCreateNestedManyWithoutInternalAccountInput
     rechargeHistory?: RechargeHistoryCreateNestedManyWithoutInternalAccountInput
@@ -10272,7 +10272,7 @@ export namespace Prisma {
   export type InternalAccountUncheckedCreateInput = {
     id?: number
     numberAccount: string
-    agency: string
+    agency?: string
     balance?: Decimal | DecimalJsLike | number | string
     user?: UserUncheckedCreateNestedManyWithoutInternalAccountInput
     rechargeHistory?: RechargeHistoryUncheckedCreateNestedManyWithoutInternalAccountInput
@@ -10298,7 +10298,7 @@ export namespace Prisma {
   export type InternalAccountCreateManyInput = {
     id?: number
     numberAccount: string
-    agency: string
+    agency?: string
     balance?: Decimal | DecimalJsLike | number | string
   }
 
@@ -11754,7 +11754,7 @@ export namespace Prisma {
 
   export type InternalAccountCreateWithoutUserInput = {
     numberAccount: string
-    agency: string
+    agency?: string
     balance?: Decimal | DecimalJsLike | number | string
     rechargeHistory?: RechargeHistoryCreateNestedManyWithoutInternalAccountInput
   }
@@ -11762,7 +11762,7 @@ export namespace Prisma {
   export type InternalAccountUncheckedCreateWithoutUserInput = {
     id?: number
     numberAccount: string
-    agency: string
+    agency?: string
     balance?: Decimal | DecimalJsLike | number | string
     rechargeHistory?: RechargeHistoryUncheckedCreateNestedManyWithoutInternalAccountInput
   }
@@ -11969,7 +11969,7 @@ export namespace Prisma {
 
   export type InternalAccountCreateWithoutRechargeHistoryInput = {
     numberAccount: string
-    agency: string
+    agency?: string
     balance?: Decimal | DecimalJsLike | number | string
     user?: UserCreateNestedManyWithoutInternalAccountInput
   }
@@ -11977,7 +11977,7 @@ export namespace Prisma {
   export type InternalAccountUncheckedCreateWithoutRechargeHistoryInput = {
     id?: number
     numberAccount: string
-    agency: string
+    agency?: string
     balance?: Decimal | DecimalJsLike | number | string
     user?: UserUncheckedCreateNestedManyWithoutInternalAccountInput
   }

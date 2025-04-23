@@ -1,19 +1,25 @@
-import { IsEmail, IsNotEmpty, IsNumber, IsString } from 'class-validator';
+import {
+  IsEmail,
+  IsNotEmpty,
+  IsString,
+  MinLength,
+  Matches,
+} from 'class-validator';
 
 export class CreateUserDto {
-  @IsString()
   @IsNotEmpty()
+  @IsString()
   name: string;
 
-  @IsString()
   @IsNotEmpty()
+  @Matches(/^\d{11}$/, { message: 'CPF deve conter 11 dígitos' })
   cpf: string;
 
-  @IsString()
+  @IsEmail()
   @IsNotEmpty()
   email: string;
 
-  @IsString()
   @IsNotEmpty()
+  @MinLength(6, { message: 'A senha deve ter no mínimo 6 caracteres' })
   password: string;
 }
