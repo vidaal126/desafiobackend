@@ -10420,7 +10420,7 @@ export namespace Prisma {
   export type CartCreateInput = {
     status?: $Enums.CartStatus
     description?: string | null
-    totalValue: Decimal | DecimalJsLike | number | string
+    totalValue?: Decimal | DecimalJsLike | number | string
     createdAt?: Date | string
     updatedAt?: Date | string
     user: UserCreateNestedOneWithoutCartsInput
@@ -10432,7 +10432,7 @@ export namespace Prisma {
     id?: number
     status?: $Enums.CartStatus
     description?: string | null
-    totalValue: Decimal | DecimalJsLike | number | string
+    totalValue?: Decimal | DecimalJsLike | number | string
     createdAt?: Date | string
     updatedAt?: Date | string
     userId: number
@@ -10467,7 +10467,7 @@ export namespace Prisma {
     id?: number
     status?: $Enums.CartStatus
     description?: string | null
-    totalValue: Decimal | DecimalJsLike | number | string
+    totalValue?: Decimal | DecimalJsLike | number | string
     createdAt?: Date | string
     updatedAt?: Date | string
     userId: number
@@ -11775,7 +11775,7 @@ export namespace Prisma {
   export type CartCreateWithoutUserInput = {
     status?: $Enums.CartStatus
     description?: string | null
-    totalValue: Decimal | DecimalJsLike | number | string
+    totalValue?: Decimal | DecimalJsLike | number | string
     createdAt?: Date | string
     updatedAt?: Date | string
     items?: CartItemCreateNestedManyWithoutCartInput
@@ -11786,7 +11786,7 @@ export namespace Prisma {
     id?: number
     status?: $Enums.CartStatus
     description?: string | null
-    totalValue: Decimal | DecimalJsLike | number | string
+    totalValue?: Decimal | DecimalJsLike | number | string
     createdAt?: Date | string
     updatedAt?: Date | string
     purchaseId?: number | null
@@ -12207,7 +12207,7 @@ export namespace Prisma {
   export type CartCreateWithoutItemsInput = {
     status?: $Enums.CartStatus
     description?: string | null
-    totalValue: Decimal | DecimalJsLike | number | string
+    totalValue?: Decimal | DecimalJsLike | number | string
     createdAt?: Date | string
     updatedAt?: Date | string
     user: UserCreateNestedOneWithoutCartsInput
@@ -12218,7 +12218,7 @@ export namespace Prisma {
     id?: number
     status?: $Enums.CartStatus
     description?: string | null
-    totalValue: Decimal | DecimalJsLike | number | string
+    totalValue?: Decimal | DecimalJsLike | number | string
     createdAt?: Date | string
     updatedAt?: Date | string
     userId: number
@@ -12311,7 +12311,7 @@ export namespace Prisma {
   export type CartCreateWithoutPurchaseInput = {
     status?: $Enums.CartStatus
     description?: string | null
-    totalValue: Decimal | DecimalJsLike | number | string
+    totalValue?: Decimal | DecimalJsLike | number | string
     createdAt?: Date | string
     updatedAt?: Date | string
     user: UserCreateNestedOneWithoutCartsInput
@@ -12322,7 +12322,7 @@ export namespace Prisma {
     id?: number
     status?: $Enums.CartStatus
     description?: string | null
-    totalValue: Decimal | DecimalJsLike | number | string
+    totalValue?: Decimal | DecimalJsLike | number | string
     createdAt?: Date | string
     updatedAt?: Date | string
     userId: number
@@ -12359,7 +12359,7 @@ export namespace Prisma {
     id?: number
     status?: $Enums.CartStatus
     description?: string | null
-    totalValue: Decimal | DecimalJsLike | number | string
+    totalValue?: Decimal | DecimalJsLike | number | string
     createdAt?: Date | string
     updatedAt?: Date | string
     purchaseId?: number | null
@@ -12520,7 +12520,7 @@ export namespace Prisma {
     id?: number
     status?: $Enums.CartStatus
     description?: string | null
-    totalValue: Decimal | DecimalJsLike | number | string
+    totalValue?: Decimal | DecimalJsLike | number | string
     createdAt?: Date | string
     updatedAt?: Date | string
     userId: number

@@ -1,26 +1,65 @@
-import { Injectable } from '@nestjs/common';
+import { HttpStatus, Injectable } from '@nestjs/common';
+import { PrismaService } from 'src/prisma/prisma.service';
 import { CreateCartDto } from './dto/create-cart.dto';
-import { UpdateCartDto } from './dto/update-cart.dto';
+import { ProductsService } from 'src/products/products.service';
 
 @Injectable()
 export class CartService {
-  create(createCartDto: CreateCartDto) {
-    return 'This action adds a new cart';
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly productsService: ProductsService,
+  ) {}
+
+  async createCart(createCartDto: CreateCartDto) {
+    try {
+      const cart = await this.prisma.cart.create({
+        data: {
+          userId: createCartDto.userId,
+          description: createCartDto.description,
+          status: 'PENDENTE',
+          totalValue: 0,
+          items: {
+            create: createCartDto.items,
+          },
+        },
+      });
+
+      return {
+        success: true,
+        message: 'Carrinho criado com sucesso',
+        data: cart,
+        statusCode: HttpStatus.CREATED,
+      };
+    } catch (error) {
+      console.error('Erro ao criar carrinho:', error);
+      return {
+        success: false,
+        message: 'Erro interno ao criar carrinho',
+        statusCode: HttpStatus.INTERNAL_SERVER_ERROR,
+      };
+    }
   }
 
-  findAll() {
-    return `This action returns all cart`;
-  }
+  async calculatePriceCart(cartId: number) {
+    try {
+      const cart = await this.prisma.cart.findUnique({
+        where: { id: cartId },
+        include: {
+          items: true,
+        },
+      });
 
-  findOne(id: number) {
-    return `This action returns a #${id} cart`;
-  }
+      if (!cart) {
+        return {
+          success: false,
+          message: 'Carrinho não encontrado',
+          statusCode: HttpStatus.NOT_FOUND,
+        };
+      }
 
-  update(id: number, updateCartDto: UpdateCartDto) {
-    return `This action updates a #${id} cart`;
-  }
+      const productIds = cart.items.map((item) => item.productId);
 
-  remove(id: number) {
-    return `This action removes a #${id} cart`;
+      const searchProducts = await this.productsService.listProducts();
+    } catch (error) {}
   }
 }

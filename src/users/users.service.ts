@@ -21,7 +21,11 @@ export class UsersService {
       });
     } catch (error) {
       console.error('Erro ao buscar usuário:', error.message);
-      throw new Error('Erro interno ao buscar usuário.');
+      return {
+        message: 'Erro ao buscar o usuário. Tente novamente.',
+        success: false,
+        statusCode: HttpStatus.INTERNAL_SERVER_ERROR,
+      };
     }
   }
 
@@ -32,13 +36,29 @@ export class UsersService {
 
       const hashedPassword = await hashPassword(createUserDto.password);
 
-      const user = await this.prisma.user.create({
-        data: {
-          name: createUserDto.name,
-          cpf: createUserDto.cpf,
-          email: createUserDto.email,
-          password: hashedPassword,
-        },
+      const { user } = await this.prisma.$transaction(async (prisma) => {
+        const user = await prisma.user.create({
+          data: {
+            name: createUserDto.name,
+            cpf: createUserDto.cpf,
+            email: createUserDto.email,
+            password: hashedPassword,
+          },
+        });
+
+        await prisma.cart.create({
+          data: {
+            userId: user.id,
+            description: 'Carrinho inicial',
+            status: 'PENDENTE',
+            totalValue: 0,
+            items: {
+              create: [],
+            },
+          },
+        });
+
+        return { user };
       });
 
       const account = await this.accountsService.createAccount(user.id);

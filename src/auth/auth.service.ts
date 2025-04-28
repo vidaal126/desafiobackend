@@ -11,12 +11,17 @@ export class AuthService {
     try {
       const user = await this.usersService.findOneByEmailOrCPF(identifier);
 
-      if (!user) {
-        return {
-          success: false,
-          message: 'Usuário não encontrado',
-          statusCode: 404,
-        };
+      if (
+        !user ||
+        ('message' in user && 'success' in user && 'statusCode' in user)
+      ) {
+        return (
+          user || {
+            success: false,
+            message: 'Usuário não encontrado',
+            statusCode: 404,
+          }
+        );
       }
 
       const isPasswordValid = await comparePassword(password, user.password);
